@@ -21,19 +21,16 @@
       </h:panelGroup>
     </f:facet>
 
-    <f:subview rendered="#{field_1 != null}" > 
-      <span>
-      <h:outputText escape="false" value="#{field_1}" />
-      </span>
-    </f:subview>  
-    <f:subview rendered="#{field_1 == null}" > 
-      <h:outputText value="#{field_0}" />
+    <f:subview>
+      <pre>
+        <h:outputText value="#{field_0}" />
+      </pre>
     </f:subview>  
 
   </rich:modalPanel>
 
   <f:subview rendered="#{100 > fn:length(field_0)}" > 
-    <span title="#{field_0}" style="cursor:pointer;">
+    <span title="#{fn:escapeXml(field_0)}" style="cursor:pointer;">
       <h:outputText  value="#{field_0}" id="#{widget.id}_mailPreviewTrigger" >
         <rich:componentControl for="#{widget.id}_MailPreviewPanel" attachTo="#{widget.id}_mailPreviewTrigger" operation="show" event="onclick" />
       </h:outputText>
@@ -41,11 +38,11 @@
   </f:subview>  
   
   <f:subview rendered="#{fn:length(field_0) > 99}" > 
-    <span title="#{field_0}"  style="cursor:pointer;">
+    <span title="#{fn:escapeXml(field_0)}"  style="cursor:pointer;">
       <h:outputText value="#{fn:substring(field_0,0,99)}..." id="#{widget.id}_mailPreviewTrigger">
         <rich:componentControl for="#{widget.id}_MailPreviewPanel" attachTo="#{widget.id}_mailPreviewTrigger" operation="show" event="onclick" />
       </h:outputText>
     </span>
-  </f:subview>  
-   
+  </f:subview>
+
 </f:subview>

@@ -2,6 +2,70 @@
 <component name="org.nuxeo.ecm.platform.mail.web.layouts.contrib">
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
 
+    <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="mail_document_content">
+
+      <title>label.contentview.document_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            != 'deleted'
+          </fixedPart>
+        </whereClause>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+
+      <resultLayouts>
+        <layout name="mail_listing" title="mail_listing"
+                translateTitle="false" iconPath="/icons/mail_listing_icon.png"
+                showCSVExport="false" showPDFExport="false"
+                showSyndicationLinks="true" />
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+    </contentView>
+  </extension>
+
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
@@ -156,28 +220,48 @@
 
     <layout name="mail_listing">
       <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml</template>
       </templates>
       <columns>
         <column>
           <properties mode="any">
+            <property name="isListingSelectionBoxWithCurrentDocument">
+              true
+            </property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>
-          <widget>listing_selection_box_with_current_document</widget>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
         <column>
           <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_icon_type</widget>
         </column>
         <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="isSortable">false</property>
+          </properties>
           <widget>listing_mail_object</widget>
           <widget>listing_mail_sending_date</widget>
           <widget>listing_mail_contact</widget>
+          <!-- ca marche pas bien en ajax et l'encodage est pourri -->
           <widget>listing_mail_body</widget>
         </column>
         <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="isSortable">false</property>
+          </properties>
           <widget>listing_mail_attachments</widget>
         </column>
       </columns>
