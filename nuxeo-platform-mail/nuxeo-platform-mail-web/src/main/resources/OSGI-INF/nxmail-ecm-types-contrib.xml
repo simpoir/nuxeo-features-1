@@ -33,13 +33,12 @@
       <layouts mode="any">
         <layout>mail_folder</layout>
       </layouts>
-      <layouts mode="listing">
-        <layout>mail_listing</layout>
-        <layout>document_listing</layout>
-      </layouts> 
       <subtypes>
         <type>MailMessage</type>
       </subtypes>
+      <contentViews category="content">
+        <contentView>mail_document_content</contentView>
+      </contentViews>
     </type>
 
     <!-- allow mail floders within workspaces -->
